@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #343a40;
+        }
+        form {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <form id="movieForm">
+            <label for="favoriteMovie">Enter your favorite movie:</label><br>
+            <input type="text" id="favoriteMovie" name="favoriteMovie"><br><br>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Recommended Movies:</h2>
+        <ul id="recommendedMovies"></ul>
+    </div>
+
+    <script>
+
+        // JavaScript for typing effect
+        const headingText = "Movie Recommendation System";
+        const typingHeading = document.getElementById("typingHeading");
+        let index = 0;
+
+        function type() {
+            if (index < headingText.length) {
+                typingHeading.innerHTML += headingText.charAt(index);
+                index++;
+                setTimeout(type, 100); // Adjust typing speed here (in milliseconds)
+            }
+        }
+
+        window.onload = type;
+
+        document.getElementById("movieForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const favoriteMovie = document.getElementById("favoriteMovie").value;
+            fetch('http://localhost:5000/recommend', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ favorite_movie: favoriteMovie }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const recommendedMoviesList = document.getElementById("recommendedMovies");
+                recommendedMoviesList.innerHTML = "";
+                data.recommended_movies.forEach(movie => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = movie;
+                    recommendedMoviesList.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
